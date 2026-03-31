@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 
 function Registro() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,_#f7941d2b,_transparent_34%),radial-gradient(circle_at_top_left,_#003b8e16,_transparent_46%),linear-gradient(180deg,#fff9f0_0%,#ffffff_52%,#fff3df_100%)] p-0 text-slate-900 md:px-8 md:py-10">
-      <section className="grid min-h-screen w-full overflow-hidden bg-white md:mx-auto md:min-h-[calc(100vh-4rem)] md:max-w-6xl md:rounded-3xl md:grid-cols-[1.05fr_0.95fr]">
+    <main className="auth-page bg-[radial-gradient(circle_at_top_right,_#f7941d2b,_transparent_34%),radial-gradient(circle_at_top_left,_#003b8e16,_transparent_46%),linear-gradient(180deg,#fff9f0_0%,#ffffff_52%,#fff3df_100%)] p-0 text-slate-900 md:px-8 md:py-10">
+      <section className="auth-shell">
         <div className="order-2 flex items-center px-6 py-10 md:order-1 md:px-14">
           <div className="w-full max-w-md">
             <p className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-unp-blue">

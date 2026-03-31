@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import RecuperarSenha from './pages/RecuperarSenha'
 import Registro from './pages/Registro'
+import VagaDetalhe from './pages/VagaDetalhe'
 import Vagas from './pages/Vagas'
 import MeuPerfil from './pages/MeuPerfil'
 import MinhasCandidaturas from './pages/MinhasCandidaturas'
@@ -18,6 +19,7 @@ function App() {
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/registro" element={<Registro />} />
         <Route path="/vagas" element={<Vagas />} />
+        <Route path="/vagas/:id" element={<VagaDetalhe />} />
         <Route path="/meu-perfil" element={<MeuPerfil />} />
         <Route path="/minhas-candidaturas" element={<MinhasCandidaturas />} />
       </Routes>
