@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 
 function RecuperarSenha() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,_#003b8e1f,_transparent_34%),radial-gradient(circle_at_top_left,_#f7941d1e,_transparent_44%),linear-gradient(180deg,#f7f9ff_0%,#ffffff_52%,#eef3ff_100%)] p-0 text-slate-900 md:px-8 md:py-10">
-      <section className="grid min-h-screen w-full overflow-hidden bg-white md:mx-auto md:min-h-[calc(100vh-4rem)] md:max-w-6xl md:rounded-3xl md:grid-cols-[1.05fr_0.95fr]">
+    <main className="auth-page bg-[radial-gradient(circle_at_top_right,_#003b8e1f,_transparent_34%),radial-gradient(circle_at_top_left,_#f7941d1e,_transparent_44%),linear-gradient(180deg,#f7f9ff_0%,#ffffff_52%,#eef3ff_100%)] p-0 text-slate-900 md:px-8 md:py-10">
+      <section className="auth-shell">
         <div className="flex items-center px-6 py-10 md:px-14">
           <div className="w-full max-w-md">
             <p className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-unp-orange">

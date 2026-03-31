@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 
 function Login() {
     return (
-        <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,_#f7941d21,_transparent_34%),radial-gradient(circle_at_top_left,_#003b8e1a,_transparent_46%),linear-gradient(180deg,#f7f9ff_0%,#ffffff_52%,#eef3ff_100%)] p-0 text-slate-900 md:px-8 md:py-10">
-            <section className="grid min-h-screen w-full overflow-hidden bg-white md:mx-auto md:min-h-[calc(100vh-4rem)] md:max-w-6xl md:rounded-3xl md:grid-cols-[0.95fr_1.05fr]">
+        <main className="auth-page bg-[radial-gradient(circle_at_top_right,_#f7941d21,_transparent_34%),radial-gradient(circle_at_top_left,_#003b8e1a,_transparent_46%),linear-gradient(180deg,#f7f9ff_0%,#ffffff_52%,#eef3ff_100%)] p-0 text-slate-900 md:px-8 md:py-10">
+            <section className="auth-shell">
                 <aside className="flex flex-col justify-center bg-unp-blue px-8 py-12 text-center text-white md:px-12">
                     <p className="font-body text-xs font-semibold uppercase tracking-[0.25em] text-white/80 opacity-0 animate-rise">
                         ConectaTech UNP

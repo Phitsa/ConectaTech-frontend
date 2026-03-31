@@ -25,3 +25,25 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.auth-page {
+  min-height: 100vh;
+}
+
+.auth-shell {
+  display: grid;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+@media (min-width: 768px) {
+  .auth-shell {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: calc(100vh - 4rem);
+    max-width: 72rem;
+    margin: 0 auto;
+    border-radius: 1.5rem;
+  }
+}
