@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { FileText, Upload, X } from 'lucide-react'
-import { StudentLayout } from '../components/StudentLayout'
+import { StudentLayout } from '../../components/StudentLayout'
 
 function MeuPerfil() {
   const [curriculoNome, setCurriculoNome] = useState<string | null>(null)

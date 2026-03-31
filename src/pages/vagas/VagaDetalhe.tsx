@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { MapPin, Building2, Clock3, Wallet, ArrowLeft, CheckCircle2 } from 'lucide-react'
-import { StudentLayout } from '../components/StudentLayout'
-import { vagasData } from '../data/vagas'
+import { StudentLayout } from '../../components/StudentLayout'
+import { vagasData } from '../../data/vagas'
 
 function VagaDetalhe() {
   const [candidaturaEnviada, setCandidaturaEnviada] = useState(false)

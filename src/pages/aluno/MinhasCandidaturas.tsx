@@ -1,4 +1,4 @@
-import { StudentLayout } from '../components/StudentLayout'
+import { StudentLayout } from '../../components/StudentLayout'
 
 function MinhasCandidaturas() {
   const candidaturas = [

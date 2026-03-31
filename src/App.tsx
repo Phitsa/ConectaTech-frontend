@@ -1,13 +1,13 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Clientes from './pages/Clientes'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import RecuperarSenha from './pages/RecuperarSenha'
-import Registro from './pages/Registro'
-import VagaDetalhe from './pages/VagaDetalhe'
-import Vagas from './pages/Vagas'
-import MeuPerfil from './pages/MeuPerfil'
-import MinhasCandidaturas from './pages/MinhasCandidaturas'
+import Login from './pages/auth/Login'
+import RecuperarSenha from './pages/auth/RecuperarSenha'
+import Registro from './pages/auth/Registro'
+import MeuPerfil from './pages/aluno/MeuPerfil'
+import MinhasCandidaturas from './pages/aluno/MinhasCandidaturas'
+import Clientes from './pages/empresa/Clientes'
+import Home from './pages/public/Home'
+import VagaDetalhe from './pages/vagas/VagaDetalhe'
+import Vagas from './pages/vagas/Vagas'
 
 function App() {
   return (
