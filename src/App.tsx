@@ -4,7 +4,9 @@ import RecuperarSenha from './pages/auth/RecuperarSenha'
 import Registro from './pages/auth/Registro'
 import MeuPerfil from './pages/aluno/MeuPerfil'
 import MinhasCandidaturas from './pages/aluno/MinhasCandidaturas'
-import Clientes from './pages/empresa/Clientes'
+import Empresa from './pages/empresa/Empresa'
+import LoginEmpresa from './pages/empresa/LoginEmpresa'
+import RegistroEmpresa from './pages/empresa/RegistroEmpresa'
 import Home from './pages/public/Home'
 import VagaDetalhe from './pages/vagas/VagaDetalhe'
 import Vagas from './pages/vagas/Vagas'
@@ -14,7 +16,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/clientes" element={<Clientes />} />
+        <Route path="/clientes" element={<Empresa />} />
+        <Route path="/empresa" element={<Empresa />} />
+        <Route path="/empresa/login" element={<LoginEmpresa />} />
+        <Route path="/empresa/registro" element={<RegistroEmpresa />} />
         <Route path="/login" element={<Login />} />
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/registro" element={<Registro />} />

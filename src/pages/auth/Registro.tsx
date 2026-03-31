@@ -60,6 +60,12 @@ function Registro() {
                   Criar conta
                 </button>
                 <Link
+                  to="/empresa/registro"
+                  className="rounded-full border border-unp-blue/25 px-7 py-2.5 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
+                >
+                  Sou uma empresa
+                </Link>
+                <Link
                   to="/"
                   className="rounded-full border border-unp-orange/35 px-7 py-2.5 font-body text-sm font-semibold text-unp-orange transition hover:bg-orange-50"
                 >
