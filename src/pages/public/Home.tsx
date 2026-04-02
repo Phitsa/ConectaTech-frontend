@@ -77,7 +77,7 @@ function Home() {
                 Quero me candidatar
               </Link>
               <Link
-                to="/clientes"
+                to="/empresa/registro"
                 className="rounded-xl border border-unp-blue/30 bg-white px-6 py-3 font-body font-bold text-unp-blue transition hover:border-unp-blue hover:bg-unp-blue/5"
               >
                 Sou empresa parceira

@@ -63,6 +63,12 @@ function Login() {
                                     Entrar
                                 </button>
                                 <Link
+                                    to="/empresa/login"
+                                    className="rounded-full border border-unp-orange/35 px-7 py-2.5 font-body text-sm font-semibold text-unp-orange transition hover:bg-orange-50"
+                                >
+                                    Sou uma empresa
+                                </Link>
+                                <Link
                                     to="/"
                                     className="rounded-full border border-unp-blue/25 px-7 py-2.5 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
                                 >
