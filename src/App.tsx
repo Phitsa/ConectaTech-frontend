@@ -5,7 +5,10 @@ import Registro from './pages/auth/Registro'
 import MeuPerfil from './pages/aluno/MeuPerfil'
 import MinhasCandidaturas from './pages/aluno/MinhasCandidaturas'
 import Empresa from './pages/empresa/Empresa'
+import DashboardEmpresa from './pages/empresa/DashboardEmpresa'
 import LoginEmpresa from './pages/empresa/LoginEmpresa'
+import NovaVagaEmpresa from './pages/empresa/NovaVagaEmpresa'
+import VagasEmpresa from './pages/empresa/VagasEmpresa'
 import RegistroEmpresa from './pages/empresa/RegistroEmpresa'
 import Home from './pages/public/Home'
 import VagaDetalhe from './pages/vagas/VagaDetalhe'
@@ -18,6 +21,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/clientes" element={<Empresa />} />
         <Route path="/empresa" element={<Empresa />} />
+        <Route path="/empresa/dashboard" element={<DashboardEmpresa />} />
+        <Route path="/empresa/vagas" element={<VagasEmpresa />} />
+        <Route path="/empresa/vagas/nova" element={<NovaVagaEmpresa />} />
         <Route path="/empresa/login" element={<LoginEmpresa />} />
         <Route path="/empresa/registro" element={<RegistroEmpresa />} />
         <Route path="/login" element={<Login />} />

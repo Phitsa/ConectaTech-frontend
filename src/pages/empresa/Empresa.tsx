@@ -56,6 +56,12 @@ function Empresa() {
             >
               Entrar como empresa
             </Link>
+            <Link
+              to="/empresa/dashboard"
+              className="rounded-xl border border-unp-blue/20 bg-unp-blue/5 px-6 py-3 font-body font-semibold text-unp-blue transition hover:bg-unp-blue/10"
+            >
+              Ver dashboard
+            </Link>
           </div>
         </div>
 

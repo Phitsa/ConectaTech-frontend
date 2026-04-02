@@ -78,6 +78,12 @@ function LoginEmpresa() {
                   Entrar
                 </button>
                 <Link
+                  to="/empresa/dashboard"
+                  className="rounded-full border border-unp-blue/25 px-7 py-2.5 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
+                >
+                  Acessar dashboard
+                </Link>
+                <Link
                   to="/login"
                   className="rounded-full border border-unp-orange/35 px-7 py-2.5 font-body text-sm font-semibold text-unp-orange transition hover:bg-orange-50"
                 >
