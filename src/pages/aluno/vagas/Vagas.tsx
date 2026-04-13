@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { StudentLayout } from '../../components/StudentLayout'
-import { vagasData } from '../../data/vagas'
+import { StudentLayout } from '../../../components/StudentLayout'
+import { vagasData } from '../../../data/vagas'
 
 function Vagas() {
   const [paginaAtual, setPaginaAtual] = useState(1)
