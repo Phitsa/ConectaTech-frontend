@@ -1,16 +1,67 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { MapPin, Building2, Clock3, Wallet, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { MapPin, Building2, ArrowLeft, CheckCircle2, ExternalLink } from 'lucide-react'
 import { StudentLayout } from '../../../components/StudentLayout'
-import { vagasData } from '../../../data/vagas'
+import { buscarVaga, candidatar, type Vaga } from '../../../services/vagas'
+import { extractApiError } from '../../../services/api'
 
 function VagaDetalhe() {
-  const [candidaturaEnviada, setCandidaturaEnviada] = useState(false)
   const { id } = useParams()
-  const vagaId = Number(id)
-  const vaga = vagasData.find((item) => item.id === vagaId)
+  const [vaga, setVaga] = useState<Vaga | null>(null)
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
+  const [candidaturaEnviada, setCandidaturaEnviada] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [erroCandidatura, setErroCandidatura] = useState('')
 
-  if (!vaga) {
+  useEffect(() => {
+    if (!id) return
+    let ativo = true
+    setCarregando(true)
+    setErro('')
+
+    buscarVaga(id)
+      .then((dados) => {
+        if (ativo) setVaga(dados)
+      })
+      .catch((error) => {
+        if (ativo) setErro(extractApiError(error, 'Vaga nao encontrada.'))
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [id])
+
+  async function handleCandidatar() {
+    if (!vaga) return
+    setEnviando(true)
+    setErroCandidatura('')
+    try {
+      await candidatar(vaga.id)
+      setCandidaturaEnviada(true)
+    } catch (error) {
+      setErroCandidatura(extractApiError(error, 'Não foi possível enviar a candidatura.'))
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  if (carregando) {
+    return (
+      <StudentLayout activeTab="vagas">
+        <div className="mx-auto w-full max-w-5xl space-y-6">
+          <div className="h-40 animate-pulse rounded-2xl border border-unp-blue/10 bg-white/70" />
+          <div className="h-64 animate-pulse rounded-2xl border border-unp-blue/10 bg-white/70" />
+        </div>
+      </StudentLayout>
+    )
+  }
+
+  if (erro || !vaga) {
     return (
       <StudentLayout activeTab="vagas">
         <div className="mx-auto max-w-3xl rounded-2xl border border-unp-blue/10 bg-white p-8 shadow-soft">
@@ -19,7 +70,7 @@ function VagaDetalhe() {
           </p>
           <h2 className="mt-2 font-heading text-3xl font-bold text-unp-blue">Vaga nao encontrada</h2>
           <p className="mt-3 font-body text-slate-600">
-            A vaga solicitada nao existe ou foi removida pela empresa.
+            {erro || 'A vaga solicitada nao existe ou foi removida.'}
           </p>
           <Link
             to="/vagas"
@@ -35,7 +86,7 @@ function VagaDetalhe() {
 
   return (
     <StudentLayout activeTab="vagas">
-      <div className="mx-auto w-full max-w-5xl space-y-6">
+      <div className="mx-auto w-full max-w-4xl space-y-6">
         <Link
           to="/vagas"
           className="inline-flex items-center gap-2 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
@@ -45,102 +96,72 @@ function VagaDetalhe() {
         </Link>
 
         <section className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft md:p-8">
-          <span className="inline-flex rounded-full bg-unp-blue/10 px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-unp-blue">
-            {vaga.area}
-          </span>
-          <h1 className="mt-4 font-heading text-3xl font-bold text-unp-blue md:text-4xl">{vaga.role}</h1>
-          <p className="mt-2 font-body text-lg text-slate-700">{vaga.company}</p>
+          {vaga.fonte && (
+            <span className="inline-flex rounded-full bg-unp-blue/10 px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-unp-blue">
+              {vaga.fonte}
+            </span>
+          )}
+          <h1 className="mt-4 font-heading text-3xl font-bold text-unp-blue md:text-4xl">{vaga.titulo}</h1>
+          <p className="mt-2 font-body text-lg text-slate-700">{vaga.empresa}</p>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="flex items-center gap-2 rounded-lg bg-unp-ice px-3 py-2 font-body text-sm text-slate-700">
-              <MapPin size={16} className="text-unp-blue" />
-              {vaga.location}
-            </div>
-            <div className="flex items-center gap-2 rounded-lg bg-unp-ice px-3 py-2 font-body text-sm text-slate-700">
-              <Building2 size={16} className="text-unp-blue" />
-              {vaga.model}
-            </div>
-            <div className="flex items-center gap-2 rounded-lg bg-unp-ice px-3 py-2 font-body text-sm text-slate-700">
-              <Clock3 size={16} className="text-unp-blue" />
-              {vaga.workload}
-            </div>
-            <div className="flex items-center gap-2 rounded-lg bg-unp-ice px-3 py-2 font-body text-sm text-slate-700">
-              <Wallet size={16} className="text-unp-blue" />
-              Bolsa: {vaga.stipend}
-            </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {vaga.localizacao && (
+              <div className="flex items-center gap-2 rounded-lg bg-unp-ice px-3 py-2 font-body text-sm text-slate-700">
+                <MapPin size={16} className="text-unp-blue" />
+                {vaga.localizacao}
+              </div>
+            )}
+            {vaga.empresaNome && (
+              <div className="flex items-center gap-2 rounded-lg bg-unp-ice px-3 py-2 font-body text-sm text-slate-700">
+                <Building2 size={16} className="text-unp-blue" />
+                {vaga.empresaNome}
+              </div>
+            )}
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft md:p-8">
-            <h2 className="font-heading text-2xl font-bold text-unp-blue">Descricao da vaga</h2>
-            <p className="mt-3 font-body text-slate-700">{vaga.description}</p>
+        <section className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft md:p-8">
+          <h2 className="font-heading text-2xl font-bold text-unp-blue">Descricao da vaga</h2>
+          <p className="mt-3 whitespace-pre-line font-body text-slate-700">
+            {vaga.descricao || 'Sem descricao informada.'}
+          </p>
 
-            <h3 className="mt-6 font-heading text-xl font-bold text-unp-blue">Sobre a empresa</h3>
-            <p className="mt-2 font-body text-slate-700">{vaga.aboutCompany}</p>
+          {vaga.url && (
+            <a
+              href={vaga.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 font-body text-sm font-semibold text-unp-blue transition hover:text-unp-blueDark"
+            >
+              <ExternalLink size={16} />
+              Ver vaga original
+            </a>
+          )}
 
-            <h3 className="mt-6 font-heading text-xl font-bold text-unp-blue">Requisitos</h3>
-            <ul className="mt-2 space-y-2 font-body text-slate-700">
-              {vaga.requirements.map((item) => (
-                <li key={item} className="rounded-md bg-slate-50 px-3 py-2">
-                  {item}
-                </li>
-              ))}
-            </ul>
+          <div className="mt-8 border-t border-unp-blue/10 pt-6">
+            <button
+              type="button"
+              onClick={handleCandidatar}
+              disabled={candidaturaEnviada || enviando}
+              className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-body font-semibold transition md:w-auto ${
+                candidaturaEnviada
+                  ? 'cursor-not-allowed bg-green-600 text-white'
+                  : 'bg-unp-orange text-slate-900 hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60'
+              }`}
+            >
+              {candidaturaEnviada && <CheckCircle2 size={18} />}
+              {candidaturaEnviada ? 'Candidatura enviada' : enviando ? 'Enviando…' : 'Candidatar-se agora'}
+            </button>
 
-            <h3 className="mt-6 font-heading text-xl font-bold text-unp-blue">Responsabilidades</h3>
-            <ul className="mt-2 space-y-2 font-body text-slate-700">
-              {vaga.responsibilities.map((item) => (
-                <li key={item} className="rounded-md bg-slate-50 px-3 py-2">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </article>
-
-          <aside className="space-y-6">
-            <div className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft">
-              <h3 className="font-heading text-xl font-bold text-unp-blue">Beneficios</h3>
-              <ul className="mt-3 space-y-2 font-body text-slate-700">
-                {vaga.benefits.map((item) => (
-                  <li key={item} className="rounded-md bg-unp-ice px-3 py-2">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft">
-              <h3 className="font-heading text-xl font-bold text-unp-blue">Etapas do processo</h3>
-              <ol className="mt-3 space-y-2 font-body text-slate-700">
-                {vaga.processSteps.map((item, index) => (
-                  <li key={item} className="rounded-md bg-slate-50 px-3 py-2">
-                    {index + 1}. {item}
-                  </li>
-                ))}
-              </ol>
-
-              <button
-                type="button"
-                onClick={() => setCandidaturaEnviada(true)}
-                disabled={candidaturaEnviada}
-                className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-body font-semibold transition ${
-                  candidaturaEnviada
-                    ? 'cursor-not-allowed bg-green-600 text-white'
-                    : 'bg-unp-orange text-slate-900 hover:brightness-95'
-                }`}
-              >
-                {candidaturaEnviada && <CheckCircle2 size={18} />}
-                {candidaturaEnviada ? 'Candidatura enviada' : 'Candidatar-se agora'}
-              </button>
-
-              {candidaturaEnviada && (
-                <p className="mt-3 text-center font-body text-sm font-semibold text-green-700">
-                  Sua candidatura foi registrada com sucesso.
-                </p>
-              )}
-            </div>
-          </aside>
+            {erroCandidatura && (
+              <p className="mt-3 font-body text-sm font-semibold text-red-600">{erroCandidatura}</p>
+            )}
+            {candidaturaEnviada && (
+              <p className="mt-3 font-body text-sm font-semibold text-green-700">
+                Sua candidatura foi registrada com sucesso.
+              </p>
+            )}
+          </div>
         </section>
       </div>
     </StudentLayout>

@@ -1,17 +1,53 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react'
 import { StudentLayout } from '../../../components/StudentLayout'
-import { vagasData } from '../../../data/vagas'
+import { listarVagas, type Vaga } from '../../../services/vagas'
+import { extractApiError } from '../../../services/api'
 
 function Vagas() {
+  const [vagas, setVagas] = useState<Vaga[]>([])
+  const [busca, setBusca] = useState('')
+  const [termo, setTermo] = useState('')
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
   const [paginaAtual, setPaginaAtual] = useState(1)
 
+  useEffect(() => {
+    let ativo = true
+
+    listarVagas(termo ? { busca: termo } : {})
+      .then((dados) => {
+        if (!ativo) return
+        setVagas(dados)
+        setErro('')
+        setPaginaAtual(1)
+      })
+      .catch((error) => {
+        if (!ativo) return
+        setErro(extractApiError(error, 'Não foi possível carregar as vagas.'))
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [termo])
+
   const vagasPorPagina = 8
-  const totalPaginas = Math.ceil(vagasData.length / vagasPorPagina)
-  const inicio = (paginaAtual - 1) * vagasPorPagina
-  const fim = inicio + vagasPorPagina
-  const vagasDaPagina = vagasData.slice(inicio, fim)
+  const totalPaginas = Math.max(1, Math.ceil(vagas.length / vagasPorPagina))
+  const vagasDaPagina = useMemo(() => {
+    const inicio = (paginaAtual - 1) * vagasPorPagina
+    return vagas.slice(inicio, inicio + vagasPorPagina)
+  }, [vagas, paginaAtual])
+
+  function handleBuscar(e: React.FormEvent) {
+    e.preventDefault()
+    setCarregando(true)
+    setTermo(busca.trim())
+  }
 
   return (
     <StudentLayout activeTab="vagas">
@@ -28,85 +64,100 @@ function Vagas() {
           </p>
         </div>
 
-        <div className="grid flex-1 content-start gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {vagasDaPagina.map((vaga) => (
-            <article
-              key={vaga.id}
-              className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft transition hover:shadow-lg"
-              style={{ animation: 'rise 0.35s ease-out both' }}
-            >
-              <span className="inline-flex rounded-full bg-unp-blue/10 px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-unp-blue">
-                {vaga.area}
-              </span>
-              <h3 className="mt-3 font-heading text-xl font-bold text-unp-blue">
-                {vaga.role}
-              </h3>
-              <p className="mt-2 font-body text-slate-700">{vaga.company}</p>
-              <p className="mt-2 font-body text-sm text-slate-600">
-                {vaga.description}
-              </p>
-              <div className="mt-4 flex gap-2 font-body text-sm text-slate-600">
-                <span className="rounded-md bg-slate-100 px-2 py-1">{vaga.model}</span>
-                <span className="rounded-md bg-slate-100 px-2 py-1">{vaga.workload}</span>
-              </div>
-              <Link
-                to={`/vagas/${vaga.id}`}
-                className="mt-5 block w-full rounded-xl bg-unp-orange px-4 py-2.5 text-center font-body font-semibold text-slate-900 transition hover:brightness-95"
-              >
-                Candidatar-se
-              </Link>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => setPaginaAtual((pagina) => Math.max(1, pagina - 1))}
-            disabled={paginaAtual === 1}
-            className="inline-flex items-center gap-1 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <ChevronLeft size={16} />
-            Anterior
-          </button>
-
-          <div className="relative flex w-48 overflow-hidden rounded-lg border border-unp-blue/20 bg-unp-ice">
-            <div
-              className="absolute inset-y-0 left-0 rounded-md bg-unp-blue transition-transform duration-300 ease-out"
-              style={{
-                width: `${100 / totalPaginas}%`,
-                transform: `translateX(${(paginaAtual - 1) * 100}%)`,
-              }}
+        <form onSubmit={handleBuscar} className="mb-6 flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por titulo, empresa ou descricao"
+              className="w-full rounded-xl border border-unp-blue/20 bg-white py-2.5 pl-10 pr-4 font-body text-sm text-slate-900 outline-none transition focus:border-unp-blue"
             />
-
-            {Array.from({ length: totalPaginas }, (_, index) => {
-              const pagina = index + 1
-
-              return (
-                <button
-                  key={pagina}
-                  type="button"
-                  onClick={() => setPaginaAtual(pagina)}
-                  className={`relative z-10 flex-1 px-3 py-2 font-body text-sm font-semibold transition ${
-                    paginaAtual === pagina ? 'text-white' : 'text-unp-blue hover:bg-unp-blue/10'
-                  }`}
-                >
-                  {pagina}
-                </button>
-              )
-            })}
           </div>
-
           <button
-            type="button"
-            onClick={() => setPaginaAtual((pagina) => Math.min(totalPaginas, pagina + 1))}
-            disabled={paginaAtual === totalPaginas}
-            className="inline-flex items-center gap-1 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice disabled:cursor-not-allowed disabled:opacity-50"
+            type="submit"
+            className="rounded-xl bg-unp-blue px-6 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-unp-blueDark"
           >
-            Proxima
-            <ChevronRight size={16} />
+            Buscar
           </button>
-        </div>
+        </form>
+
+        {carregando ? (
+          <div className="grid flex-1 content-start gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 8 }, (_, i) => (
+              <div key={i} className="h-56 animate-pulse rounded-2xl border border-unp-blue/10 bg-white/70" />
+            ))}
+          </div>
+        ) : erro ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center font-body text-red-700">
+            {erro}
+          </div>
+        ) : vagas.length === 0 ? (
+          <div className="rounded-2xl border border-unp-blue/10 bg-white p-12 text-center shadow-soft">
+            <p className="font-body text-slate-600">Nenhuma vaga encontrada.</p>
+          </div>
+        ) : (
+          <div className="grid flex-1 content-start gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {vagasDaPagina.map((vaga) => (
+              <article
+                key={vaga.id}
+                className="flex flex-col rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft transition hover:shadow-lg"
+                style={{ animation: 'rise 0.35s ease-out both' }}
+              >
+                {vaga.fonte && (
+                  <span className="inline-flex w-fit rounded-full bg-unp-blue/10 px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-unp-blue">
+                    {vaga.fonte}
+                  </span>
+                )}
+                <h3 className="mt-3 font-heading text-xl font-bold text-unp-blue">{vaga.titulo}</h3>
+                <p className="mt-2 font-body text-slate-700">{vaga.empresa}</p>
+                {vaga.descricao && (
+                  <p className="mt-2 line-clamp-3 font-body text-sm text-slate-600">{vaga.descricao}</p>
+                )}
+                {vaga.localizacao && (
+                  <div className="mt-4 flex items-center gap-1.5 font-body text-sm text-slate-600">
+                    <MapPin size={15} className="text-unp-blue" />
+                    {vaga.localizacao}
+                  </div>
+                )}
+                <Link
+                  to={`/vagas/${vaga.id}`}
+                  className="mt-5 block w-full rounded-xl bg-unp-orange px-4 py-2.5 text-center font-body font-semibold text-slate-900 transition hover:brightness-95"
+                >
+                  Ver detalhes
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {!carregando && !erro && totalPaginas > 1 && (
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPaginaAtual((pagina) => Math.max(1, pagina - 1))}
+              disabled={paginaAtual === 1}
+              className="inline-flex items-center gap-1 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ChevronLeft size={16} />
+              Anterior
+            </button>
+
+            <span className="font-body text-sm font-semibold text-unp-blue">
+              {paginaAtual} de {totalPaginas}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setPaginaAtual((pagina) => Math.min(totalPaginas, pagina + 1))}
+              disabled={paginaAtual === totalPaginas}
+              className="inline-flex items-center gap-1 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Proxima
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </StudentLayout>
   )
