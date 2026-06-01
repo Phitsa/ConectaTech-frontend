@@ -1,35 +1,23 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Briefcase, User, CheckSquare, Menu, X } from 'lucide-react'
 import BotaoLogout from './BotaoLogout'
+import { SidebarLink } from './ui/SidebarLink'
 
 type StudentLayoutProps = {
   children: ReactNode
   activeTab: 'vagas' | 'perfil' | 'candidaturas'
 }
 
+const navItems = [
+  { to: '/vagas', icon: Briefcase, label: 'Vagas', tab: 'vagas' },
+  { to: '/meu-perfil', icon: User, label: 'Meu Perfil', tab: 'perfil' },
+  { to: '/minhas-candidaturas', icon: CheckSquare, label: 'Minhas Candidaturas', tab: 'candidaturas' },
+] as const
+
 export function StudentLayout({ children, activeTab }: StudentLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const isActive = (tab: string) => activeTab === tab
-
-  const NavLink = ({ to, icon: Icon, label, tab }: { to: string; icon: any; label: string; tab: string }) => (
-    <Link
-      to={to}
-      onClick={() => setIsMobileMenuOpen(false)}
-      className={`flex items-center gap-3 rounded-lg px-4 py-3 font-body font-semibold transition ${
-        isActive(tab)
-          ? 'bg-unp-blue/10 text-unp-blue shadow-sm'
-          : 'text-slate-700 hover:bg-slate-100'
-      }`}
-    >
-      <Icon size={20} className="flex-shrink-0" />
-      <span>{label}</span>
-      {isActive(tab) && (
-        <div className="ml-auto h-2 w-2 rounded-full bg-unp-blue" />
-      )}
-    </Link>
-  )
+  const fecharMenu = () => setIsMobileMenuOpen(false)
 
   return (
     <main className="flex h-screen flex-col overflow-hidden bg-[linear-gradient(135deg,#eef3ff_0%,#ffffff_50%,#fff6f0_100%)]">
@@ -55,25 +43,28 @@ export function StudentLayout({ children, activeTab }: StudentLayoutProps) {
       </nav>
 
       <div className="flex min-h-0 flex-1">
-        {/* Desktop Sidebar */}
         <aside className="hidden h-full w-64 overflow-y-auto border-r border-unp-blue/10 bg-white p-6 md:block">
           <nav className="space-y-1">
-            <NavLink to="/vagas" icon={Briefcase} label="Vagas" tab="vagas" />
-            <NavLink to="/meu-perfil" icon={User} label="Meu Perfil" tab="perfil" />
-            <NavLink to="/minhas-candidaturas" icon={CheckSquare} label="Minhas Candidaturas" tab="candidaturas" />
+            {navItems.map((item) => (
+              <SidebarLink
+                key={item.tab}
+                to={item.to}
+                icon={item.icon}
+                label={item.label}
+                active={activeTab === item.tab}
+                onNavigate={fecharMenu}
+              />
+            ))}
           </nav>
 
           <div className="mt-8 border-t border-unp-blue/10 pt-6">
             <div className="rounded-lg bg-unp-ice p-4">
-              <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">
-                Versão
-              </p>
+              <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">Versão</p>
               <p className="mt-1 font-body text-sm text-slate-600">1.0.0</p>
             </div>
           </div>
         </aside>
 
-        {/* Mobile Menu Drawer */}
         <div
           className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
             isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
@@ -83,7 +74,7 @@ export function StudentLayout({ children, activeTab }: StudentLayoutProps) {
             className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
               isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
             }`}
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={fecharMenu}
           />
           <div
             className={`absolute left-0 top-0 bottom-0 w-64 bg-white shadow-lg overflow-y-auto transform transition-transform duration-300 ease-out ${
@@ -91,25 +82,28 @@ export function StudentLayout({ children, activeTab }: StudentLayoutProps) {
             }`}
           >
             <nav className="space-y-1 px-6 pb-6 pt-24">
-              <NavLink to="/vagas" icon={Briefcase} label="Vagas" tab="vagas" />
-              <NavLink to="/meu-perfil" icon={User} label="Meu Perfil" tab="perfil" />
-              <NavLink to="/minhas-candidaturas" icon={CheckSquare} label="Minhas Candidaturas" tab="candidaturas" />
+              {navItems.map((item) => (
+                <SidebarLink
+                  key={item.tab}
+                  to={item.to}
+                  icon={item.icon}
+                  label={item.label}
+                  active={activeTab === item.tab}
+                  onNavigate={fecharMenu}
+                />
+              ))}
             </nav>
 
             <div className="border-t border-unp-blue/10 p-6">
               <div className="rounded-lg bg-unp-ice p-4">
-                <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">
-                  Versão
-                </p>
+                <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">Versão</p>
                 <p className="mt-1 font-body text-sm text-slate-600">1.0.0</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto p-6 md:p-10">
-          {children}
-        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto p-6 md:p-10">{children}</div>
       </div>
     </main>
   )

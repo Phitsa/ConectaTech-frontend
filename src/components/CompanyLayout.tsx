@@ -1,33 +1,22 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { LayoutDashboard, BriefcaseBusiness, Menu, X } from 'lucide-react'
 import BotaoLogout from './BotaoLogout'
+import { SidebarLink } from './ui/SidebarLink'
 
 type CompanyLayoutProps = {
   children: ReactNode
   activeTab: 'dashboard' | 'vagas'
 }
 
+const navItems = [
+  { to: '/empresa/dashboard', icon: LayoutDashboard, label: 'Dashboard', tab: 'dashboard' },
+  { to: '/empresa/vagas', icon: BriefcaseBusiness, label: 'Vagas', tab: 'vagas' },
+] as const
+
 export function CompanyLayout({ children, activeTab }: CompanyLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const isActive = (tab: string) => activeTab === tab
-
-  const NavLink = ({ to, icon: Icon, label, tab }: { to: string; icon: any; label: string; tab: string }) => (
-    <Link
-      to={to}
-      onClick={() => setIsMobileMenuOpen(false)}
-      className={`flex items-center gap-3 rounded-lg px-4 py-3 font-body font-semibold transition ${
-        isActive(tab)
-          ? 'bg-unp-blue/10 text-unp-blue shadow-sm'
-          : 'text-slate-700 hover:bg-slate-100'
-      }`}
-    >
-      <Icon size={20} className="flex-shrink-0" />
-      <span>{label}</span>
-      {isActive(tab) && <div className="ml-auto h-2 w-2 rounded-full bg-unp-blue" />}
-    </Link>
-  )
+  const fecharMenu = () => setIsMobileMenuOpen(false)
 
   return (
     <main className="flex h-screen flex-col overflow-hidden bg-[linear-gradient(135deg,#eff4ff_0%,#ffffff_52%,#fff4eb_100%)]">
@@ -61,15 +50,21 @@ export function CompanyLayout({ children, activeTab }: CompanyLayoutProps) {
       <div className="flex min-h-0 flex-1">
         <aside className="hidden h-full w-64 overflow-y-auto border-r border-unp-blue/10 bg-white p-6 md:block">
           <nav className="space-y-1">
-            <NavLink to="/empresa/dashboard" icon={LayoutDashboard} label="Dashboard" tab="dashboard" />
-            <NavLink to="/empresa/vagas" icon={BriefcaseBusiness} label="Vagas" tab="vagas" />
+            {navItems.map((item) => (
+              <SidebarLink
+                key={item.tab}
+                to={item.to}
+                icon={item.icon}
+                label={item.label}
+                active={activeTab === item.tab}
+                onNavigate={fecharMenu}
+              />
+            ))}
           </nav>
 
           <div className="mt-8 border-t border-unp-blue/10 pt-6">
             <div className="rounded-lg bg-unp-ice p-4">
-              <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">
-                Status
-              </p>
+              <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">Status</p>
               <p className="mt-1 font-body text-sm text-slate-600">Painel ativo</p>
             </div>
           </div>
@@ -84,7 +79,7 @@ export function CompanyLayout({ children, activeTab }: CompanyLayoutProps) {
             className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
               isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
             }`}
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={fecharMenu}
           />
           <div
             className={`absolute left-0 top-0 bottom-0 w-64 overflow-y-auto bg-white shadow-lg transform transition-transform duration-300 ease-out ${
@@ -92,15 +87,21 @@ export function CompanyLayout({ children, activeTab }: CompanyLayoutProps) {
             }`}
           >
             <nav className="space-y-1 px-6 pb-6 pt-24">
-              <NavLink to="/empresa/dashboard" icon={LayoutDashboard} label="Dashboard" tab="dashboard" />
-              <NavLink to="/empresa/vagas" icon={BriefcaseBusiness} label="Vagas" tab="vagas" />
+              {navItems.map((item) => (
+                <SidebarLink
+                  key={item.tab}
+                  to={item.to}
+                  icon={item.icon}
+                  label={item.label}
+                  active={activeTab === item.tab}
+                  onNavigate={fecharMenu}
+                />
+              ))}
             </nav>
 
             <div className="border-t border-unp-blue/10 p-6">
               <div className="rounded-lg bg-unp-ice p-4">
-                <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">
-                  Status
-                </p>
+                <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-unp-blue">Status</p>
                 <p className="mt-1 font-body text-sm text-slate-600">Painel ativo</p>
               </div>
             </div>
