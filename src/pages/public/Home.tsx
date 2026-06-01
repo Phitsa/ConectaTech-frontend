@@ -1,6 +1,30 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { VagaCarousel } from '../../components/ui/VagaCarousel'
+import { listarVagas, type Vaga } from '../../services/vagas'
 
 function Home() {
+  const [vagas, setVagas] = useState<Vaga[]>([])
+  const [carregandoVagas, setCarregandoVagas] = useState(true)
+
+  useEffect(() => {
+    let ativo = true
+    listarVagas()
+      .then((dados) => {
+        if (ativo) setVagas(dados)
+      })
+      .catch(() => {
+        if (ativo) setVagas([])
+      })
+      .finally(() => {
+        if (ativo) setCarregandoVagas(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
   const highlights = [
     {
       title: '+120 vagas ativas',
@@ -19,34 +43,10 @@ function Home() {
     },
   ]
 
-  const jobs = [
-    {
-      role: 'Estagio em Desenvolvimento Web',
-      company: 'TechNordeste Solucoes',
-      area: 'TI',
-      model: 'Hibrido',
-      workload: '30h/semana',
-    },
-    {
-      role: 'Estagio em Marketing Digital',
-      company: 'Agencia Sertao Criativo',
-      area: 'Comunicacao',
-      model: 'Presencial',
-      workload: '20h/semana',
-    },
-    {
-      role: 'Estagio Administrativo',
-      company: 'Grupo Potiguar Negocios',
-      area: 'Gestao',
-      model: 'Presencial',
-      workload: '25h/semana',
-    },
-  ]
-
   return (
     <main className="relative overflow-x-hidden bg-[radial-gradient(circle_at_top_right,_#f7941d2e,_transparent_35%),radial-gradient(circle_at_top_left,_#003b8e1f,_transparent_45%),linear-gradient(180deg,#f7f9ff_0%,#ffffff_45%,#eef3ff_100%)] text-slate-900">
-      <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-unp-orange/20 blur-3xl" />
-      <div className="absolute -right-16 top-16 h-64 w-64 rounded-full bg-unp-blue/20 blur-3xl" />
+      <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-unp-orange/20 blur-3xl animate-float" />
+      <div className="absolute -right-16 top-16 h-64 w-64 rounded-full bg-unp-blue/20 blur-3xl animate-float [animation-delay:2s]" />
 
       <section className="mx-auto max-w-6xl px-6 pb-12 pt-10 md:px-10 md:pt-14">
         <nav className="mb-16 flex items-center justify-between rounded-2xl border border-unp-blue/15 bg-white/75 px-4 py-3 shadow-soft backdrop-blur md:px-6">
@@ -121,7 +121,7 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-12 md:px-10">
-        <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="mb-8 flex flex-col gap-3 opacity-0 animate-fadeIn [animation-delay:200ms] md:flex-row md:items-end md:justify-between">
           <div>
             <p className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-unp-orange">
               Oportunidades em destaque
@@ -130,37 +130,29 @@ function Home() {
               Vagas abertas esta semana
             </h3>
           </div>
-          <button className="self-start rounded-lg border border-unp-blue/25 bg-white px-5 py-2 font-body font-semibold text-unp-blue transition hover:bg-unp-blue/5 md:self-auto">
+          <Link
+            to="/vagas"
+            className="self-start rounded-lg border border-unp-blue/25 bg-white px-5 py-2 font-body font-semibold text-unp-blue transition hover:bg-unp-blue/5 md:self-auto"
+          >
             Ver todas as vagas
-          </button>
+          </Link>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
-          {jobs.map((job, index) => (
-            <article
-              key={job.role}
-              className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft opacity-0 animate-rise"
-              style={{ animationDelay: `${620 + index * 120}ms` }}
-            >
-              <span className="mb-3 inline-flex rounded-full bg-unp-blue/10 px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-unp-blue">
-                {job.area}
-              </span>
-              <h4 className="mb-2 font-heading text-xl font-bold text-unp-blue">
-                {job.role}
-              </h4>
-              <p className="font-body text-slate-700">{job.company}</p>
-              <div className="mt-4 flex gap-2 font-body text-sm text-slate-600">
-                <span className="rounded-md bg-slate-100 px-2 py-1">{job.model}</span>
-                <span className="rounded-md bg-slate-100 px-2 py-1">
-                  {job.workload}
-                </span>
-              </div>
-              <button className="mt-6 w-full rounded-xl bg-unp-blue px-4 py-2.5 font-body font-semibold text-white transition hover:bg-unp-blueDark">
-                Candidatar-se
-              </button>
-            </article>
-          ))}
-        </div>
+        {carregandoVagas ? (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="h-64 animate-pulse rounded-2xl border border-unp-blue/10 bg-white/70" />
+            ))}
+          </div>
+        ) : vagas.length === 0 ? (
+          <div className="rounded-2xl border border-unp-blue/10 bg-white p-12 text-center font-body text-slate-600 shadow-soft">
+            Nenhuma vaga disponivel no momento.
+          </div>
+        ) : (
+          <div className="opacity-0 animate-slideIn [animation-delay:300ms]">
+            <VagaCarousel vagas={vagas} />
+          </div>
+        )}
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-16 md:px-10">
