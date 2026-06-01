@@ -1,31 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Mail, MapPin, Pencil, Trash2 } from 'lucide-react'
 import RedatorLayout from '../../../components/RedatorLayout'
-
-const empresasData = [
-  { id: 1, name: 'TechNordeste Solucoes', sector: 'Tecnologia', location: 'Mossoró - RN', status: 'Ativa' },
-  { id: 2, name: 'Agencia Sertao Criativo', sector: 'Comunicação', location: 'Mossoró - RN', status: 'Ativa' },
-  { id: 3, name: 'Grupo Potiguar Negocios', sector: 'Gestão', location: 'Natal - RN', status: 'Em revisão' },
-  { id: 4, name: 'Lab Criativo RN', sector: 'Design', location: 'Natal - RN', status: 'Ativa' },
-  { id: 5, name: 'Norte Analytics', sector: 'Dados', location: 'Remoto', status: 'Ativa' },
-  { id: 6, name: 'Conecta Solutions', sector: 'TI', location: 'Mossoró - RN', status: 'Ativa' },
-  { id: 7, name: 'Quality Hub', sector: 'TI', location: 'Remoto', status: 'Ativa' },
-  { id: 8, name: 'Potiguar People', sector: 'RH', location: 'Mossoró - RN', status: 'Ativa' },
-  { id: 9, name: 'Blue Pixel', sector: 'TI', location: 'Natal - RN', status: 'Em revisão' },
-  { id: 10, name: 'Midia Nordeste', sector: 'Comunicação', location: 'Remoto', status: 'Ativa' },
-  { id: 11, name: 'Nexa Contabil', sector: 'Financeiro', location: 'Mossoró - RN', status: 'Ativa' },
-  { id: 12, name: 'Inova Lab', sector: 'Produto', location: 'Natal - RN', status: 'Ativa' },
-]
+import { excluirEmpresaRedator, listarEmpresasRedator } from '../../../services/redator'
+import type { Empresa } from '../../../services/empresa'
+import { extractApiError } from '../../../services/api'
 
 function RedatorEmpresas() {
-  const [paginaAtual, setPaginaAtual] = useState(1)
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
+  const [removendo, setRemovendo] = useState<number | null>(null)
 
-  const empresasPorPagina = 8
-  const totalPaginas = Math.ceil(empresasData.length / empresasPorPagina)
-  const inicio = (paginaAtual - 1) * empresasPorPagina
-  const fim = inicio + empresasPorPagina
-  const empresasDaPagina = empresasData.slice(inicio, fim)
+  useEffect(() => {
+    let ativo = true
+    listarEmpresasRedator()
+      .then((dados) => {
+        if (ativo) setEmpresas(dados)
+      })
+      .catch((error) => {
+        if (ativo) setErro(extractApiError(error, 'Não foi possível carregar as empresas.'))
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  async function handleExcluir(id: number) {
+    if (!window.confirm('Deseja excluir esta empresa?')) return
+    setRemovendo(id)
+    try {
+      await excluirEmpresaRedator(id)
+      setEmpresas((atual) => atual.filter((empresa) => empresa.id !== id))
+    } catch (error) {
+      setErro(extractApiError(error, 'Não foi possível excluir a empresa.'))
+    } finally {
+      setRemovendo(null)
+    }
+  }
 
   return (
     <RedatorLayout activeTab="empresas">
@@ -34,7 +50,7 @@ function RedatorEmpresas() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-unp-orange">Redator</p>
             <h1 className="mt-2 text-3xl font-bold text-slate-900">Empresas</h1>
-            <p className="mt-2 text-sm text-slate-600">Veja as empresas cadastradas e navegue entre as páginas.</p>
+            <p className="mt-2 text-sm text-slate-600">Gerencie as empresas cadastradas na plataforma.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
@@ -53,73 +69,67 @@ function RedatorEmpresas() {
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {empresasDaPagina.map((empresa) => (
-          <article key={empresa.id} className="rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft transition hover:shadow-lg">
-            <h3 className="font-heading text-xl font-bold text-unp-blue">{empresa.name}</h3>
-            <p className="mt-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">{empresa.sector}</p>
-            <p className="mt-3 text-sm text-slate-600">{empresa.location}</p>
-            <p className="mt-3 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">
-              {empresa.status}
-            </p>
-          </article>
-        ))}
-      </div>
+      {erro && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-body text-sm text-red-700">{erro}</div>
+      )}
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm text-slate-600">
-          Mostrando {inicio + 1}–{Math.min(fim, empresasData.length)} de {empresasData.length} empresas
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => setPaginaAtual((pagina) => Math.max(1, pagina - 1))}
-            disabled={paginaAtual === 1}
-            className="inline-flex items-center gap-1 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <ChevronLeft size={16} />
-            Anterior
-          </button>
-
-          <div className="relative flex w-48 overflow-hidden rounded-lg border border-unp-blue/20 bg-unp-ice">
-            <div
-              className="absolute inset-y-0 left-0 rounded-md bg-unp-blue transition-transform duration-300 ease-out"
-              style={{
-                width: `${100 / totalPaginas}%`,
-                transform: `translateX(${(paginaAtual - 1) * 100}%)`,
-              }}
-            />
-
-            {Array.from({ length: totalPaginas }, (_, index) => {
-              const pagina = index + 1
-
-              return (
-                <button
-                  key={pagina}
-                  type="button"
-                  onClick={() => setPaginaAtual(pagina)}
-                  className={`relative z-10 flex-1 px-3 py-2 font-body text-sm font-semibold transition ${
-                    paginaAtual === pagina ? 'text-white' : 'text-unp-blue hover:bg-unp-blue/10'
-                  }`}
-                >
-                  {pagina}
-                </button>
-              )
-            })}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setPaginaAtual((pagina) => Math.min(totalPaginas, pagina + 1))}
-            disabled={paginaAtual === totalPaginas}
-            className="inline-flex items-center gap-1 rounded-lg border border-unp-blue/25 bg-white px-4 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Próxima
-            <ChevronRight size={16} />
-          </button>
+      {carregando ? (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="h-44 animate-pulse rounded-2xl border border-unp-blue/10 bg-white/70" />
+          ))}
         </div>
-      </div>
+      ) : empresas.length === 0 ? (
+        <div className="rounded-2xl border border-unp-blue/10 bg-white p-12 text-center shadow-soft">
+          <p className="font-body text-slate-600">Nenhuma empresa cadastrada.</p>
+        </div>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {empresas.map((empresa) => (
+            <article
+              key={empresa.id}
+              className="flex flex-col rounded-2xl border border-unp-blue/10 bg-white p-6 shadow-soft transition hover:shadow-lg"
+            >
+              <h3 className="font-heading text-xl font-bold text-unp-blue">{empresa.nome}</h3>
+              {empresa.areaAtuacao && (
+                <p className="mt-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  {empresa.areaAtuacao}
+                </p>
+              )}
+              <div className="mt-3 space-y-1.5 font-body text-sm text-slate-600">
+                <div className="flex items-center gap-1.5">
+                  <Mail size={14} className="text-unp-blue" />
+                  {empresa.email}
+                </div>
+                {empresa.endereco && (
+                  <div className="flex items-center gap-1.5">
+                    <MapPin size={14} className="text-unp-blue" />
+                    {empresa.endereco}
+                  </div>
+                )}
+              </div>
+              <div className="mt-5 flex gap-2 border-t border-unp-blue/10 pt-4">
+                <Link
+                  to={`/redator/empresas/nova?id=${empresa.id}`}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-unp-blue/20 px-3 py-2 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
+                >
+                  <Pencil size={14} />
+                  Editar
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => handleExcluir(empresa.id)}
+                  disabled={removendo === empresa.id}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-red-200 px-3 py-2 font-body text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+                >
+                  <Trash2 size={14} />
+                  {removendo === empresa.id ? '…' : 'Excluir'}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </RedatorLayout>
   )
 }
