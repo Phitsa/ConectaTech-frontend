@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Briefcase, Users } from 'lucide-react'
+import BotaoLogout from './BotaoLogout'
 
 type RedatorLayoutProps = {
   children: ReactNode
@@ -37,6 +38,10 @@ function RedatorLayout({ children, activeTab }: RedatorLayoutProps) {
               Empresas
             </Link>
           </nav>
+
+          <div className="mt-6 border-t border-unp-blue/10 pt-6">
+            <BotaoLogout />
+          </div>
         </aside>
 
         <section className="flex-1 space-y-6">{children}</section>
