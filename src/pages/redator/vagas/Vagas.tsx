@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { vagasData } from '../../../data/vagas'
-import RedatorLayout from '../RedatorLayout'
+import RedatorLayout from '../../../components/RedatorLayout'
 
 function RedatorVagas() {
   const [paginaAtual, setPaginaAtual] = useState(1)

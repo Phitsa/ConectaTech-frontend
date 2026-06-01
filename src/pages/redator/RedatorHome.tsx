@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Briefcase, Users } from 'lucide-react'
-import RedatorLayout from './RedatorLayout'
+import RedatorLayout from '../../components/RedatorLayout'
 
 function RedatorHome() {
   return (

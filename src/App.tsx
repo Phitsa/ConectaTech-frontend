@@ -19,6 +19,8 @@ import NovaEmpresaRedator from './pages/redator/empresas/NovaEmpresa'
 import Home from './pages/public/Home'
 import VagaDetalhe from './pages/aluno/vagas/VagaDetalhe'
 import Vagas from './pages/aluno/vagas/Vagas'
+import RequireAuth from './components/RequireAuth'
+import RegistroRedator from './pages/redator/auth/Registro'
 
 function App() {
   return (
@@ -29,24 +31,103 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/registro" element={<Registro />} />
-        <Route path="/vagas" element={<Vagas />} />
-        <Route path="/vagas/:id" element={<VagaDetalhe />} />
-        <Route path="/meu-perfil" element={<MeuPerfil />} />
-        <Route path="/minhas-candidaturas" element={<MinhasCandidaturas />} />
+        <Route
+          path="/vagas"
+          element={
+            <RequireAuth>
+              <Vagas />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/vagas/:id"
+          element={
+            <RequireAuth>
+              <VagaDetalhe />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/meu-perfil"
+          element={
+            <RequireAuth>
+              <MeuPerfil />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/minhas-candidaturas"
+          element={
+            <RequireAuth>
+              <MinhasCandidaturas />
+            </RequireAuth>
+          }
+        />
 
         <Route path="/empresa" element={<Empresa />} />
-        <Route path="/empresa/dashboard" element={<DashboardEmpresa />} />
-        <Route path="/empresa/vagas" element={<VagasEmpresa />} />
-        <Route path="/empresa/vagas/nova" element={<NovaVagaEmpresa />} />
+        <Route
+          path="/empresa/dashboard"
+          element={
+            <RequireAuth redirectTo="/empresa/login">
+              <DashboardEmpresa />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/empresa/vagas"
+          element={
+            <RequireAuth redirectTo="/empresa/login">
+              <VagasEmpresa />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/empresa/vagas/nova"
+          element={
+            <RequireAuth redirectTo="/empresa/login">
+              <NovaVagaEmpresa />
+            </RequireAuth>
+          }
+        />
         <Route path="/empresa/login" element={<LoginEmpresa />} />
         <Route path="/empresa/registro" element={<RegistroEmpresa />} />
 
         <Route path="/redator" element={<RedatorHome />} />
-        <Route path="/redator/vagas" element={<RedatorVagas />} />
-        <Route path="/redator/vagas/nova" element={<NovaVagaRedator />} />
-        <Route path="/redator/empresas" element={<RedatorEmpresas />} />
-        <Route path="/redator/empresas/nova" element={<NovaEmpresaRedator />} />
+        <Route
+          path="/redator/vagas"
+          element={
+            
+              <RedatorVagas />
+            
+          }
+        />
+        <Route
+          path="/redator/vagas/nova"
+          element={
+            
+              <NovaVagaRedator />
+            
+          }
+        />
+        <Route
+          path="/redator/empresas"
+          element={
+            
+              <RedatorEmpresas />
+            
+          }
+        />
+        <Route
+          path="/redator/empresas/nova"
+          element={
+            
+              <NovaEmpresaRedator />
+            
+          }
+        />
         <Route path="/redator/login" element={<LoginRedator />} />
+        <Route path="/redator/registro" element={<RegistroRedator />} />
+
       </Routes>
     </BrowserRouter>
   )

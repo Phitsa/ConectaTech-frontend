@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Briefcase, User, CheckSquare, LogOut, Menu, X } from 'lucide-react'
+import BotaoLogout from '../services/BotaoLogout'
 
 type StudentLayoutProps = {
   children: ReactNode
@@ -48,10 +49,7 @@ export function StudentLayout({ children, activeTab }: StudentLayoutProps) {
               </button>
               <h1 className="font-heading text-lg font-bold text-unp-blue">Conectatech</h1>
             </div>
-            <button className="flex items-center gap-2 rounded-full bg-unp-orange px-5 py-2 font-body text-sm font-semibold text-slate-900 transition hover:brightness-95">
-              <LogOut size={16} />
-              <Link to={"/"} className="hidden sm:inline">Sair</Link>
-            </button>
+            <BotaoLogout />
           </div>
         </div>
       </nav>

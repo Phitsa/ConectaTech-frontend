@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import RedatorLayout from '../RedatorLayout'
+import RedatorLayout from '../../../components/RedatorLayout'
 
 const empresasData = [
   { id: 1, name: 'TechNordeste Solucoes', sector: 'Tecnologia', location: 'Mossoró - RN', status: 'Ativa' },

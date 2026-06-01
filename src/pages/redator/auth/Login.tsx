@@ -30,10 +30,10 @@ function Login() {
             </div>
           </div>
           <Link
-            to="/empresa/login"
+            to="/redator/registro"
             className="mt-8 inline-flex w-fit rounded-full border border-white/40 px-8 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-white/15"
           >
-            Login da empresa
+            Registro do redator
           </Link>
         </aside>
 
@@ -83,12 +83,7 @@ function Login() {
                 >
                   Sou aluno
                 </Link>
-                <Link
-                  to="/empresa/login"
-                  className="rounded-full border border-unp-orange/35 px-7 py-2.5 font-body text-sm font-semibold text-unp-orange transition hover:bg-orange-50"
-                >
-                  Sou empresa
-                </Link>
+                
               </div>
             </form>
           </div>

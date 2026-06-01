@@ -1,6 +1,41 @@
 import { Link } from 'react-router-dom'
+import { registrarUsuario } from '../../../services/auth'
+import { useState } from 'react'
 
 function Registro() {
+  const [formData, setFormData] = useState({
+    nome: '',
+    email: '',
+    senha: '',
+    curso: '',
+    periodo: ''
+  })
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+
+    try {
+      const response = await registrarUsuario(formData)
+
+      console.log(response)
+
+      alert("Usuário criado com sucesso!")
+
+    } catch (error: any) {
+      console.error(error)
+
+      console.log(error.response)
+
+      alert(JSON.stringify(error.response?.data))
+    }
+  }
   return (
     <main className="auth-page bg-[radial-gradient(circle_at_top_right,_#f7941d2b,_transparent_34%),radial-gradient(circle_at_top_left,_#003b8e16,_transparent_46%),linear-gradient(180deg,#fff9f0_0%,#ffffff_52%,#fff3df_100%)] p-0 text-slate-900 md:px-8 md:py-10">
       <section className="auth-shell">
@@ -13,42 +48,47 @@ function Registro() {
               Criar conta
             </h2>
 
-            <form className="mt-8 space-y-3">
+            <form className="mt-8 space-y-3" onSubmit={handleSubmit}  >
               <input
                 id="nome"
                 name="nome"
-                defaultValue="Joao Silva"
+                value={formData.nome}
                 placeholder="Nome"
+                onChange={handleChange}
                 className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
               />
               <input
                 id="email"
                 name="email"
                 type="email"
-                defaultValue="joao.silva@email.com"
+                value={formData.email}
                 placeholder="Email"
+                onChange={handleChange}
                 className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
               />
               <input
                 id="senha"
                 name="senha"
                 type="password"
-                defaultValue="minhasenha123"
+                value={formData.senha}
                 placeholder="Senha"
+                onChange={handleChange}
                 className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
               />
               <input
                 id="curso"
                 name="curso"
-                defaultValue="Ciencia da Computacao"
+                value={formData.curso}
                 placeholder="Curso"
+                onChange={handleChange}
                 className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
               />
               <input
                 id="periodo"
                 name="periodo"
-                defaultValue="6"
+                value={formData.periodo}
                 placeholder="Periodo"
+                onChange={handleChange} 
                 className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
               />
 
@@ -97,3 +137,4 @@ function Registro() {
 }
 
 export default Registro
+
