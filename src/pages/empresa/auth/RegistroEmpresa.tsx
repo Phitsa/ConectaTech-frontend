@@ -1,7 +1,37 @@
-import { Link } from 'react-router-dom'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Building2, Users2, Sparkles } from 'lucide-react'
+import { registrarEmpresa } from '../../../services/empresa'
+import { extractApiError } from '../../../services/api'
 
 function RegistroEmpresa() {
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState({ nome: '', cnpj: '', email: '', senha: '' })
+  const [erro, setErro] = useState('')
+  const [sucesso, setSucesso] = useState('')
+  const [carregando, setCarregando] = useState(false)
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setErro('')
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setErro('')
+    setSucesso('')
+    setCarregando(true)
+    try {
+      await registrarEmpresa(formData)
+      setSucesso('Conta criada! Confirme seu e-mail e faça login.')
+      setTimeout(() => navigate('/empresa/login'), 1500)
+    } catch (error) {
+      setErro(extractApiError(error, 'Não foi possível criar a conta.'))
+    } finally {
+      setCarregando(false)
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#0f172a24,_transparent_46%),radial-gradient(circle_at_bottom_right,_#003b8e24,_transparent_42%),linear-gradient(180deg,#f5f8ff_0%,#ffffff_52%,#edf3ff_100%)] p-0 text-slate-900 md:px-8 md:py-10">
       <section className="auth-shell">
@@ -22,40 +52,63 @@ function RegistroEmpresa() {
               Criar conta empresarial
             </h2>
 
-            <form className="mt-8 space-y-3">
+            <form className="mt-8 space-y-3" onSubmit={handleSubmit}>
               <input
-                id="empresa"
-                name="empresa"
+                id="nome"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
                 placeholder="Nome da empresa"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
+                required
+                disabled={carregando}
+                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange disabled:opacity-50"
               />
               <input
                 id="cnpj"
                 name="cnpj"
+                value={formData.cnpj}
+                onChange={handleChange}
                 placeholder="CNPJ"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
+                disabled={carregando}
+                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange disabled:opacity-50"
               />
               <input
                 id="email"
                 name="email"
                 type="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Email corporativo"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
+                required
+                disabled={carregando}
+                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange disabled:opacity-50"
               />
               <input
                 id="senha"
                 name="senha"
                 type="password"
+                value={formData.senha}
+                onChange={handleChange}
                 placeholder="Senha"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
+                required
+                disabled={carregando}
+                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange disabled:opacity-50"
               />
+
+              {erro && (
+                <p className="rounded-lg bg-red-50 px-4 py-2.5 font-body text-sm text-red-600">{erro}</p>
+              )}
+              {sucesso && (
+                <p className="rounded-lg bg-green-50 px-4 py-2.5 font-body text-sm text-green-700">{sucesso}</p>
+              )}
 
               <div className="flex flex-wrap gap-3 pt-5">
                 <button
                   type="submit"
-                  className="rounded-full bg-unp-blue px-7 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-unp-blueDark"
+                  disabled={carregando}
+                  className="rounded-full bg-unp-blue px-7 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-unp-blueDark disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Criar conta
+                  {carregando ? 'Criando…' : 'Criar conta'}
                 </button>
                 <Link
                   to="/registro"

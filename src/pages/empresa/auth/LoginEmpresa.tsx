@@ -1,7 +1,35 @@
-import { Link } from 'react-router-dom'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { ShieldCheck, Users, BriefcaseBusiness } from 'lucide-react'
+import { useAuth } from '../../../context/useAuth'
+import { extractApiError } from '../../../services/api'
 
 function LoginEmpresa() {
+  const navigate = useNavigate()
+  const { loginEmpresa } = useAuth()
+  const [formData, setFormData] = useState({ email: '', senha: '' })
+  const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(false)
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setErro('')
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setErro('')
+    setCarregando(true)
+    try {
+      await loginEmpresa(formData)
+      navigate('/empresa/dashboard')
+    } catch (error) {
+      setErro(extractApiError(error, 'E-mail ou senha inválidos.'))
+    } finally {
+      setCarregando(false)
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#0f172a24,_transparent_46%),radial-gradient(circle_at_bottom_right,_#003b8e24,_transparent_42%),linear-gradient(180deg,#f5f8ff_0%,#ffffff_52%,#edf3ff_100%)] p-0 text-slate-900 md:px-8 md:py-10">
       <section className="auth-shell">
@@ -54,35 +82,42 @@ function LoginEmpresa() {
               Acessar painel empresarial
             </h2>
 
-            <form className="mt-8 space-y-3">
+            <form className="mt-8 space-y-3" onSubmit={handleSubmit}>
               <input
                 id="email"
                 name="email"
                 type="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Email corporativo"
-                className="w-full border-b border-unp-blue/25 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-blue"
+                required
+                disabled={carregando}
+                className="w-full border-b border-unp-blue/25 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-blue disabled:opacity-50"
               />
               <input
                 id="senha"
                 name="senha"
                 type="password"
+                value={formData.senha}
+                onChange={handleChange}
                 placeholder="Senha"
-                className="w-full border-b border-unp-blue/25 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-blue"
+                required
+                disabled={carregando}
+                className="w-full border-b border-unp-blue/25 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-blue disabled:opacity-50"
               />
+
+              {erro && (
+                <p className="rounded-lg bg-red-50 px-4 py-2.5 font-body text-sm text-red-600">{erro}</p>
+              )}
 
               <div className="flex flex-wrap gap-3 pt-5">
                 <button
                   type="submit"
-                  className="rounded-full bg-unp-orange px-7 py-2.5 font-body text-sm font-semibold text-slate-900 transition hover:brightness-95"
+                  disabled={carregando}
+                  className="rounded-full bg-unp-orange px-7 py-2.5 font-body text-sm font-semibold text-slate-900 transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Entrar
+                  {carregando ? 'Entrando…' : 'Entrar'}
                 </button>
-                <Link
-                  to="/empresa/dashboard"
-                  className="rounded-full border border-unp-blue/25 px-7 py-2.5 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
-                >
-                  Acessar dashboard
-                </Link>
                 <Link
                   to="/login"
                   className="rounded-full border border-unp-orange/35 px-7 py-2.5 font-body text-sm font-semibold text-unp-orange transition hover:bg-orange-50"
