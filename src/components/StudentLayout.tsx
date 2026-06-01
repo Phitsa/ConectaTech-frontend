@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Briefcase, User, CheckSquare, LogOut, Menu, X } from 'lucide-react'
-import BotaoLogout from '../services/BotaoLogout'
+import { Briefcase, User, CheckSquare, Menu, X } from 'lucide-react'
+import BotaoLogout from './BotaoLogout'
 
 type StudentLayoutProps = {
   children: ReactNode

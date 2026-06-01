@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LayoutDashboard, BriefcaseBusiness, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, BriefcaseBusiness, Menu, X } from 'lucide-react'
+import BotaoLogout from './BotaoLogout'
 
 type CompanyLayoutProps = {
   children: ReactNode
@@ -52,13 +53,7 @@ export function CompanyLayout({ children, activeTab }: CompanyLayoutProps) {
               </div>
             </div>
 
-            <Link
-              to="/"
-              className="flex items-center gap-2 rounded-full bg-unp-orange px-5 py-2 font-body text-sm font-semibold text-slate-900 transition hover:brightness-95"
-            >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Sair</span>
-            </Link>
+            <BotaoLogout />
           </div>
         </div>
       </nav>
