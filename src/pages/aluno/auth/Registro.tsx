@@ -1,39 +1,43 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { registrarUsuario } from '../../../services/auth'
+import { extractApiError } from '../../../services/api'
 import { useState } from 'react'
 
 function Registro() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
     senha: '',
     curso: '',
-    periodo: ''
+    periodo: '',
   })
+  const [erro, setErro] = useState('')
+  const [sucesso, setSucesso] = useState('')
+  const [carregando, setCarregando] = useState(false)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setErro('')
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     })
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setErro('')
+    setSucesso('')
+    setCarregando(true)
 
     try {
-      const response = await registrarUsuario(formData)
-
-      console.log(response)
-
-      alert("Usuário criado com sucesso!")
-
-    } catch (error: any) {
-      console.error(error)
-
-      console.log(error.response)
-
-      alert(JSON.stringify(error.response?.data))
+      await registrarUsuario(formData)
+      setSucesso('Conta criada! Confirme seu e-mail e faça login.')
+      setTimeout(() => navigate('/login'), 1500)
+    } catch (error) {
+      setErro(extractApiError(error, 'Não foi possível criar a conta.'))
+    } finally {
+      setCarregando(false)
     }
   }
   return (
@@ -92,12 +96,24 @@ function Registro() {
                 className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
               />
 
+              {erro && (
+                <p className="rounded-lg bg-red-50 px-4 py-2.5 font-body text-sm text-red-600">
+                  {erro}
+                </p>
+              )}
+              {sucesso && (
+                <p className="rounded-lg bg-green-50 px-4 py-2.5 font-body text-sm text-green-700">
+                  {sucesso}
+                </p>
+              )}
+
               <div className="flex flex-wrap gap-3 pt-5">
                 <button
                   type="submit"
-                  className="rounded-full bg-unp-blue px-7 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-unp-blueDark"
+                  disabled={carregando}
+                  className="rounded-full bg-unp-blue px-7 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-unp-blueDark disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Criar conta
+                  {carregando ? 'Criando…' : 'Criar conta'}
                 </button>
                 <Link
                   to="/empresa/registro"

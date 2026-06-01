@@ -1,12 +1,20 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../context/useAuth'
+import { extractApiError } from '../../../services/api'
+
+const rotaPorPapel: Record<string, string> = {
+    REDATOR: '/redator/vagas',
+    ADMIN: '/redator/vagas',
+}
 
 function Login() {
     const navigate = useNavigate()
+    const { login } = useAuth()
 
     const [formData, setFormData] = useState({
-        email: 'pedro@email.com',
-        senha: 'minhasenha123',
+        email: '',
+        senha: '',
     })
     const [erro, setErro] = useState('')
     const [carregando, setCarregando] = useState(false)
@@ -22,39 +30,10 @@ function Login() {
         setCarregando(true)
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: formData.email,
-                    senha: formData.senha,
-                }),
-            })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                // Usa mensagem da API se disponível, senão mensagem genérica
-                setErro(data?.message || data?.erro || 'E-mail ou senha inválidos.')
-                return
-            }
-
-            // Salva o token JWT no localStorage
-            const token = data?.token ?? data?.access_token ?? data?.jwt
-            if (!token) {
-                setErro('Resposta inválida do servidor. Tente novamente.')
-                return
-            }
-            localStorage.setItem('token', token)
-
-            // Salva dados do usuário se a API os retornar
-            if (data?.user ?? data?.usuario) {
-                localStorage.setItem('user', JSON.stringify(data.user ?? data.usuario))
-            }
-
-            navigate('/vagas')
-        } catch {
-            setErro('Não foi possível conectar ao servidor. Verifique sua conexão.')
+            const usuario = await login(formData)
+            navigate(rotaPorPapel[usuario.role] ?? '/vagas')
+        } catch (error) {
+            setErro(extractApiError(error, 'E-mail ou senha inválidos.'))
         } finally {
             setCarregando(false)
         }
@@ -114,7 +93,6 @@ function Login() {
                                 className="w-full border-b border-unp-blue/25 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-blue disabled:opacity-50"
                             />
 
-                            {/* Mensagem de erro */}
                             {erro && (
                                 <p className="rounded-lg bg-red-50 px-4 py-2.5 font-body text-sm text-red-600">
                                     {erro}
