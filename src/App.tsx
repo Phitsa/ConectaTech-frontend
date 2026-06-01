@@ -92,37 +92,44 @@ function App() {
         <Route path="/empresa/login" element={<LoginEmpresa />} />
         <Route path="/empresa/registro" element={<RegistroEmpresa />} />
 
-        <Route path="/redator" element={<RedatorHome />} />
+        <Route
+          path="/redator"
+          element={
+            <RequireAuth redirectTo="/redator/login" role={['REDATOR', 'ADMIN']}>
+              <RedatorHome />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/redator/vagas"
           element={
-            
+            <RequireAuth redirectTo="/redator/login" role={['REDATOR', 'ADMIN']}>
               <RedatorVagas />
-            
+            </RequireAuth>
           }
         />
         <Route
           path="/redator/vagas/nova"
           element={
-            
+            <RequireAuth redirectTo="/redator/login" role={['REDATOR', 'ADMIN']}>
               <NovaVagaRedator />
-            
+            </RequireAuth>
           }
         />
         <Route
           path="/redator/empresas"
           element={
-            
+            <RequireAuth redirectTo="/redator/login" role={['REDATOR', 'ADMIN']}>
               <RedatorEmpresas />
-            
+            </RequireAuth>
           }
         />
         <Route
           path="/redator/empresas/nova"
           element={
-            
+            <RequireAuth redirectTo="/redator/login" role={['REDATOR', 'ADMIN']}>
               <NovaEmpresaRedator />
-            
+            </RequireAuth>
           }
         />
         <Route path="/redator/login" element={<LoginRedator />} />
