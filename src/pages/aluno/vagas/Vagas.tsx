@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, MapPin, Search } from 'lucide-react'
 import { StudentLayout } from '../../../components/StudentLayout'
+import { VagaCarousel } from '../../../components/ui/VagaCarousel'
 import { listarVagas, type Vaga } from '../../../services/vagas'
 import { extractApiError } from '../../../services/api'
 
@@ -81,6 +82,13 @@ function Vagas() {
             Buscar
           </button>
         </form>
+
+        {!carregando && !erro && !termo && vagas.length > 0 && (
+          <div className="mb-10 opacity-0 animate-fadeIn">
+            <h3 className="mb-4 font-heading text-lg font-bold text-unp-blue">Vagas em destaque</h3>
+            <VagaCarousel vagas={vagas.slice(0, 8)} />
+          </div>
+        )}
 
         {carregando ? (
           <div className="grid flex-1 content-start gap-5 md:grid-cols-2 lg:grid-cols-4">
