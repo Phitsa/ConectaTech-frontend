@@ -19,45 +19,25 @@ function RegistroRedator() {
               Cadastro do redator
             </p>
             <h2 className="mt-3 font-heading text-3xl font-bold text-unp-orange md:text-4xl">
-              Criar conta de redator
+              Acesso restrito
             </h2>
 
-            <form className="mt-8 space-y-3">
-              <input
-                id="nome"
-                name="nome"
-                placeholder="Nome completo"
+            <div className="mt-8 space-y-4">
+              <p className="font-body text-slate-600">
+                As contas de redator sao criadas por um administrador da plataforma. Caso precise de
+                acesso administrativo, entre em contato com a coordenacao do ConectaTech.
+              </p>
+              <p className="font-body text-slate-600">
+                Ja possui credenciais? Faca login no painel administrativo.
+              </p>
 
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
-              />
-              <input
-                id="cnpj"
-                name="cnpj"
-                placeholder="CNPJ"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
-              />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Email corporativo"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
-              />
-              <input
-                id="senha"
-                name="senha"
-                type="password"
-                placeholder="Senha"
-                className="w-full border-b border-unp-orange/35 bg-transparent px-1 py-3 font-body text-slate-900 outline-none transition focus:border-unp-orange"
-              />
-
-              <div className="flex flex-wrap gap-3 pt-5">
-                <button
-                  type="submit"
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link
+                  to="/redator/login"
                   className="rounded-full bg-unp-blue px-7 py-2.5 font-body text-sm font-semibold text-white transition hover:bg-unp-blueDark"
                 >
-                  Criar conta
-                </button>
+                  Ir para login
+                </Link>
                 <Link
                   to="/registro"
                   className="rounded-full border border-unp-blue/25 px-7 py-2.5 font-body text-sm font-semibold text-unp-blue transition hover:bg-unp-ice"
@@ -65,7 +45,7 @@ function RegistroRedator() {
                   Sou aluno
                 </Link>
               </div>
-            </form>
+            </div>
           </div>
         </div>
 
